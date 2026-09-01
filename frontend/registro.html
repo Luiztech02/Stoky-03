@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StockSys — Produtos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <nav class="navbar">
+    <div class="nav-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">STOCK<em>SYS</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link" data-page="home">HOME</a></li>
+      <li><a href="registro.html" class="nav-link active" data-page="registro">PRODUTOS</a></li>
+    </ul>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span class="status-text">SISTEMA ONLINE</span>
+    </div>
+  </nav>
+
+  <main class="page-registro">
+
+    <div class="page-header">
+      <h1 class="page-title">GESTÃO DE <span class="highlight">PRODUTOS</span></h1>
+      <p class="page-sub">Cadastre, edite e monitore seu inventário completo</p>
+    </div>
+
+    <!-- FORM + TABLE LAYOUT -->
+    <div class="registro-layout">
+
+      <!-- FORM PANEL -->
+      <aside class="form-panel">
+        <div class="panel-header">
+          <span class="panel-tag">// NOVO REGISTRO</span>
+          <h3 id="form-title">CADASTRAR PRODUTO</h3>
+        </div>
+
+        <form id="product-form" class="product-form" novalidate>
+          <input type="hidden" id="edit-id" />
+
+          <div class="field-group">
+            <label for="prod-nome">NOME DO PRODUTO *</label>
+            <input type="text" id="prod-nome" placeholder="Ex: Monitor 27pol" required />
+            <span class="field-line"></span>
+          </div>
+
+          <div class="field-group">
+            <label for="prod-codigo">CÓDIGO / SKU *</label>
+            <input type="text" id="prod-codigo" placeholder="Ex: MON-27-001" required />
+            <span class="field-line"></span>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="prod-categoria">CATEGORIA *</label>
+              <select id="prod-categoria" required>
+                <option value="">Selecione…</option>
+                <option>Eletrônicos</option>
+                <option>Periféricos</option>
+                <option>Escritório</option>
+                <option>Ferramentas</option>
+                <option>Alimentos</option>
+                <option>Vestuário</option>
+                <option>Outros</option>
+              </select>
+              <span class="field-line"></span>
+            </div>
+            <div class="field-group">
+              <label for="prod-unidade">UNIDADE</label>
+              <select id="prod-unidade">
+                <option value="un">Unidade</option>
+                <option value="cx">Caixa</option>
+                <option value="kg">Kg</option>
+                <option value="l">Litro</option>
+                <option value="m">Metro</option>
+              </select>
+              <span class="field-line"></span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="prod-quantidade">QUANTIDADE *</label>
+              <input type="number" id="prod-quantidade" min="0" placeholder="0" required />
+              <span class="field-line"></span>
+            </div>
+            <div class="field-group">
+              <label for="prod-minimo">ESTOQUE MÍNIMO</label>
+              <input type="number" id="prod-minimo" min="0" placeholder="5" />
+              <span class="field-line"></span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="prod-preco-custo">PREÇO CUSTO (R$)</label>
+              <input type="number" id="prod-preco-custo" min="0" step="0.01" placeholder="0,00" />
+              <span class="field-line"></span>
+            </div>
+            <div class="field-group">
+              <label for="prod-preco-venda">PREÇO VENDA (R$)</label>
+              <input type="number" id="prod-preco-venda" min="0" step="0.01" placeholder="0,00" />
+              <span class="field-line"></span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="prod-fornecedor">FORNECEDOR</label>
+            <input type="text" id="prod-fornecedor" placeholder="Nome do fornecedor" />
+            <span class="field-line"></span>
+          </div>
+
+          <div class="field-group">
+            <label for="prod-descricao">DESCRIÇÃO</label>
+            <textarea id="prod-descricao" rows="3" placeholder="Detalhes adicionais…"></textarea>
+            <span class="field-line"></span>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btn-submit">SALVAR PRODUTO</button>
+            <button type="button" class="btn-ghost" id="btn-cancel" onclick="cancelEdit()" style="display:none">CANCELAR</button>
+          </div>
+
+          <div id="form-msg" class="form-msg"></div>
+        </form>
+      </aside>
+
+      <!-- TABLE PANEL -->
+      <section class="table-panel">
+        <div class="table-toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Buscar produto, código, categoria…" />
+          </div>
+          <div class="toolbar-right">
+            <select id="filter-categoria" class="filter-select">
+              <option value="">TODAS AS CATEGORIAS</option>
+            </select>
+            <select id="filter-status" class="filter-select">
+              <option value="">TODOS OS STATUS</option>
+              <option value="ok">Normal</option>
+              <option value="low">Estoque Baixo</option>
+              <option value="zero">Sem Estoque</option>
+            </select>
+            <button class="btn-mini" onclick="exportData()">⬇ CSV</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="product-table" id="product-table">
+            <thead>
+              <tr>
+                <th>CÓDIGO</th>
+                <th>NOME</th>
+                <th>CATEGORIA</th>
+                <th>QTD</th>
+                <th>PREÇO VENDA</th>
+                <th>STATUS</th>
+                <th>AÇÕES</th>
+              </tr>
+            </thead>
+            <tbody id="product-tbody">
+              <tr class="empty-row">
+                <td colspan="7">
+                  <div class="empty-state">
+                    <span class="empty-icon">◌</span>
+                    <p>Nenhum produto cadastrado. Use o formulário ao lado.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-footer">
+          <span id="table-count">0 produtos encontrados</span>
+          <div class="legend">
+            <span><span class="badge badge-ok">●</span> Normal</span>
+            <span><span class="badge badge-low">●</span> Estoque Baixo</span>
+            <span><span class="badge badge-zero">●</span> Sem Estoque</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- MODAL CONFIRM DELETE -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-icon">⚠</div>
+        <h3>CONFIRMAR EXCLUSÃO</h3>
+        <p id="modal-msg">Tem certeza que deseja remover este produto?<br/>Esta ação não pode ser desfeita.</p>
+        <div class="modal-actions">
+          <button class="btn-danger" id="btn-confirm-delete">EXCLUIR</button>
+          <button class="btn-ghost" onclick="closeModal()">CANCELAR</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="logo-text small">STOCK<em>SYS</em></span>
+      <span class="footer-sep">|</span>
+      <span>Sistema de Gestão de Estoque</span>
+      <span class="footer-sep">|</span>
+      <span>HTML5 · CSS3 · JavaScript</span>
+    </div>
+    <div class="footer-copy">© 2025 StockSys — Todos os direitos reservados</div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+  <script src="canvas-bg.js"></script>
+</body>
+</html>

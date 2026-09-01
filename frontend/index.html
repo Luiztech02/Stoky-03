@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StockSys — Sistema de Estoque</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- CANVAS BACKGROUND -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">STOCK<em>SYS</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link active" data-page="home">HOME</a></li>
+      <li><a href="registro.html" class="nav-link" data-page="registro">PRODUTOS</a></li>
+    </ul>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span class="status-text">SISTEMA ONLINE</span>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="page-home">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-badge">v2.0.1 — OPERATIONAL</div>
+      <h1 class="hero-title">
+        CONTROLE<br/>
+        <span class="highlight">TOTAL</span><br/>
+        DO SEU ESTOQUE
+      </h1>
+      <p class="hero-sub">Gerencie produtos, monitore quantidades e tome decisões baseadas em dados — em tempo real.</p>
+      <div class="hero-actions">
+        <a href="registro.html" class="btn-primary">REGISTRAR PRODUTO <span>→</span></a>
+        <a href="registro.html" class="btn-ghost">VER INVENTÁRIO</a>
+      </div>
+      <div class="hero-scan-line"></div>
+    </section>
+
+    <!-- STATS BAR -->
+    <section class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-value" id="stat-total">0</span>
+        <span class="stat-label">PRODUTOS CADASTRADOS</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-categorias">0</span>
+        <span class="stat-label">CATEGORIAS ATIVAS</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-estoque">0</span>
+        <span class="stat-label">UNIDADES EM ESTOQUE</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-valor">R$ 0</span>
+        <span class="stat-label">VALOR TOTAL</span>
+      </div>
+    </section>
+
+    <!-- DASHBOARD GRID -->
+    <section class="dashboard">
+      <div class="dash-header">
+        <h2 class="section-title">PAINEL DE CONTROLE</h2>
+        <span class="section-tag">// VISÃO GERAL</span>
+      </div>
+
+      <div class="dash-grid">
+
+        <!-- RECENT PRODUCTS -->
+        <div class="card card-wide">
+          <div class="card-header">
+            <span class="card-icon">📦</span>
+            <h3>ÚLTIMOS PRODUTOS</h3>
+            <a href="registro.html" class="card-action">VER TODOS →</a>
+          </div>
+          <div class="product-list" id="home-product-list">
+            <div class="empty-state">
+              <span class="empty-icon">◌</span>
+              <p>Nenhum produto cadastrado ainda.</p>
+              <a href="registro.html" class="btn-mini">Cadastrar agora</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ALERTS CARD -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">⚠</span>
+            <h3>ALERTAS</h3>
+          </div>
+          <div class="alert-list" id="alert-list">
+            <div class="alert-item alert-ok">
+              <span class="alert-dot green"></span>
+              <span>Sistema operacional</span>
+            </div>
+            <div class="alert-item">
+              <span class="alert-dot yellow"></span>
+              <span id="alert-low">Verifique o estoque</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTION -->
+        <div class="card card-action-panel">
+          <div class="card-header">
+            <span class="card-icon">⚡</span>
+            <h3>AÇÕES RÁPIDAS</h3>
+          </div>
+          <div class="quick-actions">
+            <a href="registro.html" class="quick-btn">
+              <span class="qb-icon">＋</span>
+              <span>Novo Produto</span>
+            </a>
+            <a href="registro.html" class="quick-btn">
+              <span class="qb-icon">🔍</span>
+              <span>Buscar Item</span>
+            </a>
+            <button class="quick-btn" onclick="exportData()">
+              <span class="qb-icon">⬇</span>
+              <span>Exportar CSV</span>
+            </button>
+            <button class="quick-btn" onclick="window.print()">
+              <span class="qb-icon">🖨</span>
+              <span>Imprimir</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CHART MINI -->
+        <div class="card card-chart">
+          <div class="card-header">
+            <span class="card-icon">📊</span>
+            <h3>DISTRIBUIÇÃO POR CATEGORIA</h3>
+          </div>
+          <canvas id="chart-categorias" height="160"></canvas>
+          <div class="chart-legend" id="chart-legend"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features">
+      <div class="dash-header">
+        <h2 class="section-title">FUNCIONALIDADES</h2>
+        <span class="section-tag">// MÓDULOS DO SISTEMA</span>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feat-icon">🗄️</div>
+          <h4>ARMAZENAMENTO LOCAL</h4>
+          <p>Dados persistidos no localStorage do navegador — sem servidor, sem nuvem, sem custo.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon">🔎</div>
+          <h4>BUSCA & FILTROS</h4>
+          <p>Encontre qualquer produto instantaneamente por nome, categoria ou código.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon">📤</div>
+          <h4>EXPORTAÇÃO CSV</h4>
+          <p>Exporte todo o inventário para planilhas com um clique.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon">📬</div>
+          <h4>ALERTAS INTELIGENTES</h4>
+          <p>Notificações automáticas de estoque baixo ou zerado para evitar rupturas.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="logo-text small">STOCK<em>SYS</em></span>
+      <span class="footer-sep">|</span>
+      <span>Sistema de Gestão de Estoque</span>
+      <span class="footer-sep">|</span>
+      <span>HTML5 · CSS3 · JavaScript</span>
+    </div>
+    <div class="footer-copy">© 2025 StockSys — Todos os direitos reservados</div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+  <script src="canvas-bg.js"></script>
+</body>
+</html>

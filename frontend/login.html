@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StockSys — Acesso</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <main class="page-login">
+    <div class="login-box">
+      <div class="login-brand">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">STOCK<em>SYS</em></span>
+      </div>
+
+      <div class="login-tabs">
+        <button type="button" class="login-tab active" data-tab="login">ENTRAR</button>
+        <button type="button" class="login-tab" data-tab="register">CRIAR CONTA</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="login-form" class="product-form login-form">
+        <div class="field-group">
+          <label for="login-username">USUÁRIO</label>
+          <input type="text" id="login-username" autocomplete="username" required />
+          <span class="field-line"></span>
+        </div>
+        <div class="field-group">
+          <label for="login-password">SENHA</label>
+          <input type="password" id="login-password" autocomplete="current-password" required />
+          <span class="field-line"></span>
+        </div>
+        <button type="submit" class="btn-primary login-submit">ACESSAR SISTEMA <span>→</span></button>
+        <div id="login-msg" class="form-msg"></div>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="register-form" class="product-form login-form" style="display:none">
+        <div class="field-group">
+          <label for="reg-username">ESCOLHA UM USUÁRIO</label>
+          <input type="text" id="reg-username" minlength="3" autocomplete="username" required />
+          <span class="field-line"></span>
+        </div>
+        <div class="field-group">
+          <label for="reg-password">ESCOLHA UMA SENHA</label>
+          <input type="password" id="reg-password" minlength="6" autocomplete="new-password" required />
+          <span class="field-line"></span>
+        </div>
+        <button type="submit" class="btn-primary login-submit">CRIAR CONTA <span>→</span></button>
+        <div id="register-msg" class="form-msg"></div>
+      </form>
+
+      <p class="login-hint">Usuário padrão: <code>admin</code> / senha: <code>admin123</code></p>
+    </div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    // Se já estiver logado, pula direto pro dashboard
+    if (isLoggedIn()) window.location.href = 'index.html';
+
+    const tabs = document.querySelectorAll('.login-tab');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const isLogin = tab.dataset.tab === 'login';
+        loginForm.style.display = isLogin ? 'flex' : 'none';
+        registerForm.style.display = isLogin ? 'none' : 'flex';
+      });
+    });
+
+    function showMsg(el, type, text) {
+      el.className = `form-msg ${type}`;
+      el.textContent = text;
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('login-msg');
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const body = new URLSearchParams({ username, password });
+        const res = await fetch(`${window.STOCKSYS_API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Falha no login');
+
+        setSession(data.access_token, username);
+        window.location.href = 'index.html';
+      } catch (err) {
+        showMsg(msg, 'error', `⚠ ${err.message}`);
+      }
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('register-msg');
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value;
+
+      try {
+        const res = await fetch(`${window.STOCKSYS_API_BASE}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Falha no cadastro');
+
+        setSession(data.access_token, username);
+        window.location.href = 'index.html';
+      } catch (err) {
+        showMsg(msg, 'error', `⚠ ${err.message}`);
+      }
+    });
+  </script>
+  <script src="canvas-bg.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+services:
+  api:
+    build: ./backend
+    container_name: stocksys-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./stocksys.db
+      - SECRET_KEY=troque-esta-chave-em-producao
+      - ACCESS_TOKEN_EXPIRE_MINUTES=480
+    volumes:
+      - stocksys-data:/app
+    restart: unless-stopped
+
+volumes:
+  stocksys-data:
