@@ -21,6 +21,14 @@ O objetivo dessa reestruturação é sair do "projeto de estudo" e chegar perto 
 
 ---
 
+## Screenshots
+
+![Dashboard](screenshots/dashboard.png)
+![Produtos](screenshots/produtos.png)
+![Documentação da API](screenshots/api-docs.png)
+
+---
+
 ## Arquitetura
 
 ```
@@ -54,9 +62,9 @@ stocksys/
 │   ├── canvas-bg.js          → animação de fundo (Canvas 2D)
 │   └── style.css             → design system
 │
+├── screenshots/               → imagens do sistema funcionando
 ├── docker-compose.yml         → sobe a API com um comando
 └── README.md
-    ├──screenshots/           → imagens do sistema funcionando. 
 ```
 
 **Fluxo de autenticação:** o usuário faz login em `login.html` → a API retorna um token JWT → o token é guardado no `localStorage` do navegador e enviado em `Authorization: Bearer <token>` em toda chamada subsequente → todas as rotas de produtos e dashboard exigem esse token.
