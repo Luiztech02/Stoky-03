@@ -23,7 +23,7 @@ O objetivo dessa reestruturação é sair do "projeto de estudo" e chegar perto 
 
 ## Screenshots
 
-![Dashboard](screenshots/dashboard.png)
+
 ![Produtos](screenshots/produtos.png)
 ![Documentação da API](screenshots/api-docs.png)
 
